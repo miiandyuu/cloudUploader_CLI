@@ -54,7 +54,7 @@ for FILE in "${FILE_PATH[@]}"; do
     BLOB_NAME=$(basename "$FILE")
 
     # Upload the file to Azure Blob Storage
-    az storage blob upload --account-name "$ACCOUNT_NAME" --container-name "$CONTAINER_NAME" --name "$BLOB_NAME" --file "$FILE" --auth-mode login
+    pv "$FILE" | az storage blob upload --account-name "$ACCOUNT_NAME" --container-name "$CONTAINER_NAME" --name "$BLOB_NAME" --file "$FILE" --auth-mode login
 
     # Check for the upload status
     if ! az storage blob upload &>/dev/null; then
