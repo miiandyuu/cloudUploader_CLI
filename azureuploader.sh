@@ -3,10 +3,10 @@
 # Default values for options
 ACCOUNT_NAME=""
 CONTAINER_NAME=""
-BLOB_NAME=""
+# BLOB_NAME=""
 FILE_PATH=()
 
-while getopts ":a:c:b:f:" opt; do
+while getopts ":a:c:f:" opt; do
     case $opt in
         a)
             ACCOUNT_NAME="$OPTARG"
@@ -14,13 +14,11 @@ while getopts ":a:c:b:f:" opt; do
         c)
             CONTAINER_NAME="$OPTARG"
             ;;
-        b)
-            BLOB_NAME="$OPTARG"
-            ;;
+        # b)
+        #     BLOB_NAME="$OPTARG"
+        #     ;;
         f)
             FILE_PATH+=("$OPTARG")
-            # IFS =' ' read -r -a FILE_PATH <<< "$OPTARG"
-            # echo $FILE_PATH
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -41,11 +39,9 @@ fi
 
 # Check if the required options are provided
 if [ -z "$ACCOUNT_NAME" ] || [ -z "$CONTAINER_NAME" ] || [ ${#FILE_PATH[@]} -eq 0 ]; then
-    echo "Usage: $0 -a <account-name> -c <container-name> -f <file-path> [-b <blob_name>]"
+    echo "Usage: $0 -a <account-name> -c <container-name> -f <file-path>"
     exit 1
 fi
-
-# IFS=' ' read -ra FILE_PATH <<< "$FILE_PATH"
 
 for FILE in "${FILE_PATH[@]}"; do
     #Check if the file exists
@@ -55,7 +51,7 @@ for FILE in "${FILE_PATH[@]}"; do
     fi
 
     # Use the provided BLOB
-    BLOB_NAME=${BLOB_NAME:-$(basename "$FILE")}
+    BLOB_NAME=$(basename "$FILE")
 
     # Upload the file to Azure Blob Storage
     az storage blob upload --account-name "$ACCOUNT_NAME" --container-name "$CONTAINER_NAME" --name "$BLOB_NAME" --file "$FILE" --auth-mode login
